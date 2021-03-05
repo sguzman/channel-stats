@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+service Views {
+    rpc view (ChannelID) returns (ChannelViews) {}
+}
+
+message ChannelID {
+    string name = 1;
+}
+
+message ChannelViews {
+    uint64 views = 1;
+}
