@@ -130,5 +130,3 @@ dmypy.json
 .idea/
 *.html
 *.json
-server_pb2.py
-server_pb2_grpc.py
