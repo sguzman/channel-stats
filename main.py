@@ -81,21 +81,29 @@ def grab(arg):
     return view
 
 
+def port():
+    import os
+
+    return int(os.environ['PORT'])
+
+
 def main():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
+    p = port()
 
     server = grpc.server(multiprocessing.pool.ThreadPool(1))
     server_pb2_grpc.add_ViewsServicer_to_server(server_pb2_grpc.ViewsServicer(), server)
-    server.add_insecure_port('[::]:9090')
+    server.add_insecure_port(f'[::]:{p}')
     server.start()
-    logging.info('Started server')
+    logging.info(f'Started server at {p}')
     server.wait_for_termination()
 
 
 class Server(server_pb2_grpc.ViewsServicer):
     def view(self, request, context):
         name = grab(request.name)
+        logging.info(name)
         return server_pb2.ChannelViews(name=name)
 
 
