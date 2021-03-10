@@ -1,12 +1,15 @@
 from bs4 import BeautifulSoup
+import concurrent
+import concurrent.futures as futures
 import grpc
 import json
 import logging
-import multiprocessing
-import multiprocessing.pool
 import requests
-import server_pb2
-import server_pb2_grpc
+
+import lib
+import lib.server_pb2 as server_pb2
+import lib.server_pb2_grpc as server_pb2_grpc
+import lib.log
 
 
 init_str = 'var ytInitialData = '
@@ -88,12 +91,10 @@ def port():
 
 
 def main():
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
     p = port()
 
-    server = grpc.server(multiprocessing.pool.ThreadPool(1))
-    server_pb2_grpc.add_ViewsServicer_to_server(server_pb2_grpc.ViewsServicer(), server)
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+    server_pb2_grpc.add_ViewsServicer_to_server(Server(), server)
     server.add_insecure_port(f'[::]:{p}')
     server.start()
     logging.info(f'Started server at {p}')
@@ -104,7 +105,7 @@ class Server(server_pb2_grpc.ViewsServicer):
     def view(self, request, context):
         name = grab(request.name)
         logging.info(name)
-        return server_pb2.ChannelViews(name=name)
+        return server_pb2.ChannelViews(views=name)
 
 
 if __name__ == '__main__':
