@@ -16,7 +16,7 @@ def run():
 	channel = grpc.insecure_channel(addr)
 	stub = server_pb2_grpc.ViewsStub(channel)
 	response = stub.view(server_pb2.ChannelID(name='UCL7DDQWP6x7wy0O6L5ZIgxg'))
-	print("Greeter client received: " + response.message)
+	logging.info("Greeter client received: %i", response.views)
 
 
 def main():
